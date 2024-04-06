@@ -19,7 +19,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 class DrawingClassifier:
-    
+# <<<------FUNCTION------>>> # 
     def __init__(self):
         self.class1, self.class2, self.class3 = None, None, None
         self.class1_counter,self.class2_counter,self.class3_counter = None, None, None
@@ -38,7 +38,7 @@ class DrawingClassifier:
         self.classes_prompt()
         self.init_gui()
 
-
+# <<<------FUNCTION------>>> #
     def classes_prompt(self):
         msg = Tk()
         msg.withdraw()
@@ -74,7 +74,7 @@ class DrawingClassifier:
             os.mkdir(self.class3)
             os.chdir("..")
 
-
+# <<<------FUNCTION------>>> #
     def init_gui(self):
         WIDTH = 500
         HEIGHT = 500
@@ -95,7 +95,7 @@ class DrawingClassifier:
         btn_frame.columnconfigure(0, weight = 1)
         btn_frame.columnconfigure(1, weight = 1)
         btn_frame.columnconfigure(2, weight = 1)
-
+        #//////////
         class1_btn = Button(btn_frame, text=self.class1, command = lambda: self.save(1))
         class1_btn.grid(row=0, column=0, sticky = W+E)
 
@@ -105,7 +105,7 @@ class DrawingClassifier:
         class3_btn = Button(btn_frame, text=self.class3, command = lambda: self.save(3))
         class3_btn.grid(row=0, column=2, sticky = W+E)
         #//////////
-        bm_btn = Button(btn_frame, text="Clear", command=self.bruhsminus)
+        bm_btn = Button(btn_frame, text="Clear", command=self.brushminus)
         bm_btn.grid(row=1, column=1, sticky = W+E)
         
         clear_btn = Button(btn_frame, text="Brush-", command=self.clear)
@@ -146,17 +146,66 @@ class DrawingClassifier:
         self.root.attributes("-topmost", True)
         self.root.mainloop()
 
+# <<<------FUNCTION------>>> #
     def paint(self, event):
-        pass
+        x1,y1 = (event.x-1), (event.y-1)
+        x2,y2 = (event.x+1), (event.y+1)
+        self.canvas.create_rectangle(x1,y1,x2,y2, fill="black", width = self.brush_width)
+        self.draw.rectangle([x1, y2, x2 + self.brush_width, y2 + self.brush_width], fill="black", width=self.brush_width)
 
+
+# <<<------FUNCTION------>>> #
     def save(self, class_num):
-        pass
+        self.image1.save("temp.png")
+        img = PIL.Image.open("temp.png")
+        img.thumbnail((50,50), PIL.Image.Resampling.LANCZOS)
 
+        if class_num == 1:
+            img.save(f"{self.proj_name}/{self.class1}/{self.class1_counter}.png", "PNG")
+            self.class1_counter += 1
+
+        elif class_num == 2:
+            img.save(f"{self.proj_name}/{self.class2}/{self.class2_counter}.png", "PNG")
+            self.class2_counter += 1
+
+        elif class_num == 3:
+            img.save(f"{self.proj_name}/{self.class3}/{self.class3_counter}.png", "PNG")
+            self.class3_counter += 1
+
+        self.clear()
+# <<<------FUNCTION------>>> #
     def brushminus(self):
-        pass
-
+        if self.brush_width>1:
+            self.brush_width -=1
+# <<<------FUNCTION------>>> #
     def brushplus(self):
+        self.brush_width +=1
+# <<<------FUNCTION------>>> #
+    def clear(self):
+        self.canvas.delete("all")
+        self.draw.rectangle([0,0,1000,1000], fill="white")
+# <<<------FUNCTION------>>> #
+    def train_model(self):
+        pass
+# <<<------FUNCTION------>>> #
+    def predict(self):
+        pass
+# <<<------FUNCTION------>>> #
+    def rotate_model(self):
+        pass
+# <<<------FUNCTION------>>> #
+    def save_model(self):
+        pass
+# <<<------FUNCTION------>>> #
+    def load_model(self):
+        pass
+# <<<------FUNCTION------>>> #
+    def save_everything(self):
+        pass
+# <<<------FUNCTION------>>> #
+    def on_closing(self):
         pass
 
-    def clear(self):
-        pass
+
+
+DrawingClassifier()
