@@ -3,7 +3,7 @@ import os.path
 
 import tkinter.messagebox
 from tkinter import *
-from tkinter import simpledialog 
+from tkinter import simpledialog, filedialog 
 
 import numpy as np
 import PIL
@@ -16,6 +16,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 
 
 class DrawingClassifier:
@@ -105,11 +106,11 @@ class DrawingClassifier:
         class3_btn = Button(btn_frame, text=self.class3, command = lambda: self.save(3))
         class3_btn.grid(row=0, column=2, sticky = W+E)
         #//////////
-        bm_btn = Button(btn_frame, text="Clear", command=self.brushminus)
-        bm_btn.grid(row=1, column=1, sticky = W+E)
+        bm_btn = Button(btn_frame, text="Brush-", command=self.brushminus)
+        bm_btn.grid(row=1, column=0, sticky = W+E)
         
-        clear_btn = Button(btn_frame, text="Brush-", command=self.clear)
-        clear_btn.grid(row=1, column=0, sticky = W+E)
+        clear_btn = Button(btn_frame, text="Clear", command=self.clear)
+        clear_btn.grid(row=1, column=1, sticky = W+E)
 
         bp_btn = Button(btn_frame, text="Brush+", command=self.brushplus)
         bp_btn.grid(row=1, column=2, sticky = W+E)
@@ -213,7 +214,7 @@ class DrawingClassifier:
 
         img_list = img_list.reshape(self.class1_counter -1 + self.class2_counter-1 + self.class3_counter-1, 2500)
 
-        self.clf.fit(img_list.class_list)
+        self.clf.fit(img_list,class_list)
         tkinter.messagebox.showinfo("Drawing Classifier", "Model successfully trained!", parent =self.root)
 
     
@@ -228,27 +229,59 @@ class DrawingClassifier:
         img = img.reshape(2500)
         prediction = self.clf.predict([img])
         if prediction[0] == 1:
-            tkinter.message.showinfo("Drawing Classifier", f"The drawing is probably a {self.class1}", parent = self.root)
+            tkinter.messagebox.showinfo("Drawing Classifier", f"The drawing is probably a {self.class1}", parent = self.root)
         elif prediction[0] == 2:
-            tkinter.message.showinfo("Drawing Classifier", f"The drawing is probably a {self.class2}", parent = self.root)    
+            tkinter.messagebox.showinfo("Drawing Classifier", f"The drawing is probably a {self.class2}", parent = self.root)    
         elif prediction[0] == 3:
-            tkinter.message.showinfo("Drawing Classifier", f"The drawing is probably a {self.class3}", parent = self.root)
+            tkinter.messagebox.showinfo("Drawing Classifier", f"The drawing is probably a {self.class3}", parent = self.root)
 
 # <<<------FUNCTION------>>> #
     def rotate_model(self):
-        pass
+        if isinstance(self.clf, LinearSVC):
+            self.clf = KNeighborsClassifier()
+        elif isinstance(self.clf, KNeighborsClassifier):
+            self.clf = LogisticRegression()
+        elif isinstance(self.clf, LogisticRegression):
+            self.clf = DecisionTreeClassifier()
+        elif isinstance(self.clf,  DecisionTreeClassifier):
+            self.clf = RandomForestClassifier()
+        elif isinstance(self.clf, RandomForestClassifier):
+            self.clf = GaussianNB()
+        elif isinstance(self.clf, GaussianNB):
+            self.clf = LinearSVC()
+
+        self.status_label.config(text = f"Current Model: {type(self.clf).__name__}")
 # <<<------FUNCTION------>>> #
     def save_model(self):
-        pass
+        file_path = filedialog.asksaveasfilename(defaultextension="pickle")
+        with open(file_path, "wb") as f:
+            pickle.dump(self.clf,f)
+        tkinter.messagebox.showinfo("Drawing Classifier", "Model successfully saved!", parent = self.root)
+
 # <<<------FUNCTION------>>> #
     def load_model(self):
-        pass
+        file_path = filedialog.askopenfilename()
+        with open(file_path, "rb") as f:
+            self.clf = pickle.load(f)
+        tkinter.messagebox.showinfo("Drawing Classifier", "Model successfully loaded!", parent = self.root)
+
 # <<<------FUNCTION------>>> #
     def save_everything(self):
-        pass
+        data = {"cl": self.class1, "c2":self.class2, "c3": self.class3, "c1c":self.class1_counter, "c2c":self.class2_counter,
+                "c3c":self.class3_counter, "clf": self.clf, "pname": self.proj_name}
+        
+        with open(f"{self.proj_name}/{self.proj_name}_data.pickle", "wb") as f:
+            pickle.dump(data,f)
+        tkinter.messagebox.showinfo("Drawing Classifier", "Model successfully saved!", parent = self.root)
+    
 # <<<------FUNCTION------>>> #
     def on_closing(self):
-        pass
+        answer =  tkinter.messagebox.askyesnocancel("Quit?", "Do you want to save your work?", parent = self.root)
+        if answer is not None:
+            if answer:
+                self.save_everything()
+            self.root.destroy()
+            exit()
 
 
 
