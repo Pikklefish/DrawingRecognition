@@ -186,10 +186,54 @@ class DrawingClassifier:
         self.draw.rectangle([0,0,1000,1000], fill="white")
 # <<<------FUNCTION------>>> #
     def train_model(self):
-        pass
+        img_list = np.array([])
+        class_list = np.array([])
+
+        # Gather training data
+        for x in range(1, self.class1_counter):
+            img = cv.imread(f"{self.proj_name}/{self.class1}/{x}.png")[:,:,0]
+            img = img.reshape(2500)
+            img_list = np.append(img_list, [img])
+            class_list = np.append(class_list,1)
+
+
+        for x in range(1, self.class2_counter):
+            img = cv.imread(f"{self.proj_name}/{self.class2}/{x}.png")[:,:,0]
+            img = img.reshape(2500)
+            img_list = np.append(img_list, [img])
+            class_list = np.append(class_list,2)
+
+
+        for x in range(1, self.class3_counter):
+            img = cv.imread(f"{self.proj_name}/{self.class3}/{x}.png")[:,:,0]
+            img = img.reshape(2500)
+            img_list = np.append(img_list, [img])
+            class_list = np.append(class_list,3)
+        # ///////
+
+        img_list = img_list.reshape(self.class1_counter -1 + self.class2_counter-1 + self.class3_counter-1, 2500)
+
+        self.clf.fit(img_list.class_list)
+        tkinter.messagebox.showinfo("Drawing Classifier", "Model successfully trained!", parent =self.root)
+
+    
 # <<<------FUNCTION------>>> #
     def predict(self):
-        pass
+        self.image1.save("temp.png")
+        img = PIL.Image.open("temp.png")
+        img.thumbnail((50,50), PIL.Image.Resampling.LANCZOS )
+        img.save("predictshape.png", "PNG")
+
+        img = cv.imread("predictshape.png")[:,:,0]
+        img = img.reshape(2500)
+        prediction = self.clf.predict([img])
+        if prediction[0] == 1:
+            tkinter.message.showinfo("Drawing Classifier", f"The drawing is probably a {self.class1}", parent = self.root)
+        elif prediction[0] == 2:
+            tkinter.message.showinfo("Drawing Classifier", f"The drawing is probably a {self.class2}", parent = self.root)    
+        elif prediction[0] == 3:
+            tkinter.message.showinfo("Drawing Classifier", f"The drawing is probably a {self.class3}", parent = self.root)
+
 # <<<------FUNCTION------>>> #
     def rotate_model(self):
         pass
