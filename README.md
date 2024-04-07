@@ -1,6 +1,6 @@
 # DrawingRecognition
 This project is for Story Palzzz. \
-**Features include**\
+**Features include** \
 *  Custom classes
 *  input your own training data
 *  Choose between different ML models
