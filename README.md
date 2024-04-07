@@ -1,10 +1,10 @@
 # DrawingRecognition
 This project is for Story Palzzz. \
 **Features include**\
-*Custom classes
-*input your own training data
-*choose between different ML models
-*Save models and open them up later
+*  Custom classes
+*  input your own training data
+*  Choose between different ML models
+*  Save models and open them up later
 
 ## How to get started
 Please install the following packages. \
